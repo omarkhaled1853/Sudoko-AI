@@ -1,3 +1,4 @@
+from Lib.random_sudoku_board import random_sudoku_board
 from collections import deque
 
 def create_variables():
@@ -53,19 +54,6 @@ def create_neighbors(variables):
     return neighbors
 
 
-
-
-board = [
-    ['8','0','9','5','0','1','7','3','6'],
-    ['2','0','7','0','6','3','0','0','0'],
-    ['1','6','0','0','0','0','0','0','0'],
-    ['0','0','0','0','9','0','4','0','7'],
-    ['0','9','0','3','0','7','0','2','0'],
-    ['7','0','6','0','8','0','0','0','0'],
-    ['0','0','0','0','0','0','0','6','3'],
-    ['0','0','0','9','3','0','5','0','2'],
-    ['5','3','2','6','0','4','8','0','9']
-]
 def delete_constraint_values(values: [], neighbors:[]):
     for neighbor in neighbors:
         if board[neighbor[0]][neighbor[1]] != '0':
@@ -89,7 +77,6 @@ def get_valid_values(variable):
 
 def create_domain(board:[[]]):
     domain = {}
-    allValues = ['1','2','3','4','5','6','7','8','9']
 
     for i in range(9):
         for j in range(9):
@@ -138,6 +125,22 @@ def order_domain_values(variable):
 
     return order_domain
 
+def valid_move(var, value):
+    variable_neighbors = get_all_neighbors(var)
+
+    for neighbor in variable_neighbors:
+        if board[neighbor[0]][neighbor[1]] == value:
+            return False
+
+    return True
+
+def game_solved():
+    for i in range(9):
+        for j in range(9):
+            if board[i][j] == '0':
+                return False
+
+    return  True
 
 def ac_3():
     queue = deque()
@@ -179,15 +182,71 @@ def revise(xi, xj):
 
     return revised
 
+def bakctrack():
+    if game_solved():
+        return True
+
+    var = select_unassigned_variable(variables)
+    order_values = order_domain_values(var)
+
+    for value in order_values:
+        board[var[0]][var[1]] = value
+
+        if ac_3():
+            result = bakctrack()
+            if result:
+                return True
+
+        board[var[0]][var[1]] = '0'
+
+    return False
+
+def print_board():
+    for i in range(9):
+        for j in range(9):
+            print(board[i][j] + " ", end="")
+        print()
+
+
+
+
+
+
+
+board = [
+    ['0','0','8','0','4','0','0','0','0'],
+    ['9','0','3','0','0','1','2','0','0'],
+    ['0','0','0','5','0','0','0','1','0'],
+    ['0','8','0','0','0','9','0','0','0'],
+    ['4','0','9','7','0','0','0','0','3'],
+    ['0','5','0','0','0','0','4','0','0'],
+    ['2','0','1','0','0','5','3','0','0'],
+    ['0','0','0','0','6','0','0','0','7'],
+    ['0','4','0','0','0','0','0','0','0']
+]
+
+sudoku = random_sudoku_board(9, 40)
+sudoku.fill_board()
+board = [[str(i) for i in row] for row in sudoku.mat]
 
 variables = create_variables()
 neighbors = create_neighbors(variables)
 domain = create_domain(board)
 
 ac_3()
+print(bakctrack())
+print_board()
 
-for t in domain.items():
-    print(t)
+
+
+
+
+
+#
+# ac_3()
+#
+# for t in domain.items():
+#     print(t)
 
 # print(number_of_role_out((1,1), '4'))
 # print(number_of_role_out((1,1), '5'))
