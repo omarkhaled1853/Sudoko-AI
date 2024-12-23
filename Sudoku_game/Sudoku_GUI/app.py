@@ -1,8 +1,8 @@
 import tkinter as tk
-from Sudoku_GUI.Pages.menu_page import MenuPage
-from Sudoku_GUI.Pages.Modes.mode_one_page import ModeOnePage
-from Sudoku_GUI.Pages.Modes.mode_two_page import ModeTwoPage
-from Sudoku_GUI.Pages.Modes.mode_three_page import ModeThreePage
+from Sudoku_game.Sudoku_GUI.Pages.menu_page import MenuPage
+from Sudoku_game.Sudoku_GUI.Pages.Modes.mode_one_page import ModeOnePage
+from Sudoku_game.Sudoku_GUI.Pages.Modes.mode_two_page import ModeTwoPage
+from Sudoku_game.Sudoku_GUI.Pages.Modes.mode_three_page import ModeThreePage
 
 class App(tk.Tk):
     """Main application controller with root frame."""

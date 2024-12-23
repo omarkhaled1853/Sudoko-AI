@@ -1,9 +1,9 @@
 import tkinter as tk
-from Sudoku_GUI.Pages.base_page import BasePage
-from Sudoku_GUI.utils import create_styled_label
-from Sudoku_GUI.utils import create_styled_button
-from Sudoku_logic.random_sudoku_board import RandomSudokuBoard
-from Sudoku_logic.sudoku_solver import SudokuSolver
+from Sudoku_game.Sudoku_GUI.Pages.base_page import BasePage
+from Sudoku_game.Sudoku_GUI.utils import create_styled_label
+from Sudoku_game.Sudoku_GUI.utils import create_styled_button
+from Sudoku_game.Sudoku_logic.random_sudoku_board import RandomSudokuBoard
+from Sudoku_game.Sudoku_logic.sudoku_solver import SudokuSolver
 
 class ModeOnePage(BasePage):
     def __init__(self, parent, controller):
@@ -18,7 +18,7 @@ class ModeOnePage(BasePage):
 
         back_button = create_styled_button(
             self.base_page_frame,
-            "<- Back to Menu",
+            "← Back to Menu",
             controller.show_menu
         )
         back_button.pack(pady=10)

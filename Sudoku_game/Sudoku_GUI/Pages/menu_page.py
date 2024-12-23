@@ -1,7 +1,7 @@
 import tkinter as tk
-from Sudoku_GUI.Pages.base_page import BasePage
-from Sudoku_GUI.utils import create_styled_button
-from Sudoku_GUI.utils import create_styled_label
+from Sudoku_game.Sudoku_GUI.Pages.base_page import BasePage
+from Sudoku_game.Sudoku_GUI.utils import create_styled_button
+from Sudoku_game.Sudoku_GUI.utils import create_styled_label
 
 class MenuPage(BasePage):
     """Class representing the menu page."""

@@ -1,6 +1,6 @@
 import random
 import math
-from Sudoku_logic.sudoku_solver import SudokuSolver
+from Sudoku_game.Sudoku_logic.sudoku_solver import SudokuSolver
 
 class RandomSudokuBoard:
     def __init__(self, N, K):

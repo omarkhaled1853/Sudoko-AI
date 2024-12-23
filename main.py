@@ -1,4 +1,4 @@
-from Sudoku_GUI.app import App;
+from Sudoku_game.Sudoku_GUI.app import App;
 
 if __name__ == "__main__":
     app = App()
