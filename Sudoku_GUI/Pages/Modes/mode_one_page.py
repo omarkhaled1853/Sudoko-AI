@@ -161,34 +161,12 @@ class ModeOnePage(BasePage):
         frame.grid(row=1, column=0, columnspan=2, pady=10)
 
         # Create "Erase" button
-        erase_button = self.create_styled_button(frame, "Erase", self.erase_cell)
+        erase_button = create_styled_button(frame, "Erase", self.erase_cell)
         erase_button.grid(row=0, column=1, padx=10, pady=5)
 
         # Create "New Game" button
-        new_game_button = self.create_styled_button(frame, "New Game", self.new_game)
+        new_game_button = create_styled_button(frame, "New Game", self.new_game)
         new_game_button.grid(row=0, column=2, padx=10, pady=5)
-
-
-    # Function to create styled buttons with hover and select effects
-    def create_styled_button(self, frame, text, command) -> tk.Button:
-        button = tk.Button(
-            frame,
-            text=text,
-            font=("Arial", 14, "bold"),
-            cursor="hand2",
-            background="#5A7BC0",
-            foreground="#FFFFFF",
-            activebackground="#3A5B88",
-            activeforeground="#E0E0E0",
-            bd=0,
-            relief="flat",
-            command=command,
-        )
-            
-        button.bind("<Enter>", button.config(background="#3A5B88", foreground="#E0E0E0"))
-        button.bind("<Leave>", button.config(background="#5A7BC0", foreground="#FFFFFF"))
-
-        return button
 
     def erase_cell(self):
         """Erases the content of the focused cell."""
