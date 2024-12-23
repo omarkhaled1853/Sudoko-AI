@@ -167,6 +167,7 @@ class SudokuSolver:
         return False
 
     def solve(self):
+        self._ac_3()
         print(self._backtrack())
         return self.board
 
