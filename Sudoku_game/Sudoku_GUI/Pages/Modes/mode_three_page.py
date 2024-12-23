@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+import time
 from Sudoku_game.Sudoku_GUI.Pages.base_page import BasePage
 from Sudoku_game.Sudoku_GUI.utils import create_styled_label
 from Sudoku_game.Sudoku_GUI.utils import create_styled_button
@@ -281,7 +282,11 @@ class ModeThreePage(BasePage):
     def is_valid_play(self, cell):
         """Check if is valid play or not"""
         sudoku_solver = SudokuSolver(self.board)
+        start_time = time.time()
         is_valid = sudoku_solver.ac_3()
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Elapsed time: {elapsed_time} seconds")
         if is_valid:
             self.set_cell_highlight(cell, "#90EE90")
         else:
