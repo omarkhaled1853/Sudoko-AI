@@ -171,13 +171,13 @@ class ModeOnePage(BasePage):
         # =============================================================
         # todo
         # Create "Generate random board" button
-        new_game_button = create_styled_button(frame, "Generate Random Board", self.generate_randome_board)
-        new_game_button.grid(row=0, column=3, padx=10, pady=5)
+        generate_randome_board_button = create_styled_button(frame, "Generate Random Board", self.generate_randome_board)
+        generate_randome_board_button.grid(row=0, column=3, padx=10, pady=5)
 
         # todo
         # Create "Solve board" button
-        new_game_button = create_styled_button(frame, "Solve Board", self.solve_board)
-        new_game_button.grid(row=0, column=4, padx=10, pady=5)
+        solve_board_button = create_styled_button(frame, "Solve Board", self.solve_board)
+        solve_board_button.grid(row=0, column=4, padx=10, pady=5)
         # =============================================================
 
 
