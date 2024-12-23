@@ -2,6 +2,7 @@ import tkinter as tk
 from Sudoku_GUI.Pages.base_page import BasePage
 from Sudoku_GUI.utils import create_styled_label
 from Sudoku_GUI.utils import create_styled_button
+from Sudoku_logic.random_sudoku_board import random_sudoku_board
 
 class ModeOnePage(BasePage):
     def __init__(self, parent, controller):
@@ -32,13 +33,19 @@ class ModeOnePage(BasePage):
         self.selected_number: tk.StringVar = tk.StringVar(value="")
         # To track the currently selected cell
         self.selected_cell: tuple = None
+        # Initialize board
+        self.board: list[list] = []
+        # Initialize generated cells
+        self.generated_cells = set()
 
         # Initialize sudoku grid
         self.create_sudoku_grid()
         # Initialize number pad
         self.create_number_pad()
         # Initialize action buttons
-        self.create_action_buttons()  
+        self.create_action_buttons()
+        # generate randome board initialy
+        self.generate_randome_board()  
 
     def create_sudoku_grid(self):
         """Creates the Sudoku grid."""
@@ -76,7 +83,8 @@ class ModeOnePage(BasePage):
         """Highlights the selected cell and stores its position."""
         # Save the currently selected cell
         self.selected_cell = (row, col)  
-        self.highlight_related_cells(row, col)
+        if self.selected_cell not in self.generated_cells:
+            self.highlight_related_cells(row, col)
 
     def highlight_related_cells(self, row, col):
         """Highlights the selected cell, its row, column, and 3x3 subgrid."""
@@ -105,7 +113,10 @@ class ModeOnePage(BasePage):
         """Clears all highlights from the grid with default color."""
         for row in range(9):
             for col in range(9):
-                self.set_cell_highlight(self.grid_entries[row][col], "white")
+                if (row, col) not in self.generated_cells:
+                    self.set_cell_highlight(self.grid_entries[row][col], "white")
+                else:
+                    self.set_cell_highlight(self.grid_entries[row][col], "#D3D3D3")
 
     def create_number_pad(self):
         """Creates a stylish number pad."""
@@ -141,7 +152,7 @@ class ModeOnePage(BasePage):
 
     def set_selected_number(self, number):
         """Sets the selected number from number pad in the selected cell in suduko grid entries."""
-        if self.selected_cell:
+        if self.selected_cell and self.selected_cell not in self.generated_cells:
             self.selected_number.set(str(number))
             # Get the selected cell
             row, col = self.selected_cell
@@ -164,26 +175,19 @@ class ModeOnePage(BasePage):
         erase_button = create_styled_button(frame, "Erase", self.erase_cell)
         erase_button.grid(row=0, column=1, padx=10, pady=5)
 
-        # # Create "New Game" button
-        # new_game_button = create_styled_button(frame, "New Game", self.new_game)
-        # new_game_button.grid(row=0, column=2, padx=10, pady=5)
-
-        # =============================================================
-        # todo
         # Create "Generate random board" button
         generate_randome_board_button = create_styled_button(frame, "Generate Random Board", self.generate_randome_board)
-        generate_randome_board_button.grid(row=0, column=3, padx=10, pady=5)
+        generate_randome_board_button.grid(row=0, column=2, padx=10, pady=5)
 
         # todo
         # Create "Solve board" button
         solve_board_button = create_styled_button(frame, "Solve Board", self.solve_board)
-        solve_board_button.grid(row=0, column=4, padx=10, pady=5)
-        # =============================================================
+        solve_board_button.grid(row=0, column=3, padx=10, pady=5)
 
 
     def erase_cell(self):
         """Erases the content of the focused cell."""
-        if self.selected_cell:
+        if self.selected_cell and self.selected_cell not in self.generated_cells:
             # Get the selected cell
             row, col = self.selected_cell
             # Temporarily enable editing to update cell
@@ -193,23 +197,33 @@ class ModeOnePage(BasePage):
             # Set back to readonly
             self.grid_entries[row][col].config(state="readonly") 
 
-    # def new_game(self):
-    #     """Clears the Sudoku grid for a new game."""
-    #     for row in self.grid_entries:
-    #         for cell in row:
-    #             # Temporarily enable editing to update cell
-    #             cell.config(state="normal")
-    #             # Delete the existing value if any
-    #             cell.delete(0, tk.END)
-    #             # Set back to readonly
-    #             cell.config(state="readonly")
+    def update_grid_entries(self):
+        """Update board with the new generated number"""
+        self.generated_cells.clear()
+        for i in range(9):
+            for j in range(9):
+                # Temporarily enable editing to update cell
+                self.grid_entries[i][j].config(state="normal")
+                # Delete the existing value if any
+                self.grid_entries[i][j].delete(0, tk.END)
+                # Insert the selected number
+                if self.board[i][j] != '0':
+                    self.generated_cells.add((i, j))
+                    self.grid_entries[i][j].insert(0, str(self.board[i][j]))
+                    self.grid_entries[i][j].config(readonlybackground="#D3D3D3")
+                else:
+                    self.grid_entries[i][j].config(readonlybackground="#F6F9FC")
+                    
+                # Set back to readonly
+                self.grid_entries[i][j].config(state="readonly") 
 
-    # =============================================================
-    # todo
     def generate_randome_board(self):
-        pass
+        """Generate randome board"""
+        # Initialize randome board generator class
+        random_sudoku = random_sudoku_board(9, 30)
+        self.board = random_sudoku.get_board_with_unique_solutino()
+        self.update_grid_entries()
 
     # todo
     def solve_board(self):
         pass
-    # =============================================================

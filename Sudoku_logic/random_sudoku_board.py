@@ -145,17 +145,17 @@ class random_sudoku_board:
         return board
 
 
-random_sudoku = random_sudoku_board(9, 30)
-board = random_sudoku.get_board_with_unique_solutino()
+# random_sudoku = random_sudoku_board(9, 30)
+# board = random_sudoku.get_board_with_unique_solutino()
 
-k = 0
-for i in range(9):
-    for j in range(9):
-        if board[i][j] == '0':
-            k += 1
-        print(board[i][j] + " ", end="")
-    print()
+# k = 0
+# for i in range(9):
+#     for j in range(9):
+#         if board[i][j] == '0':
+#             k += 1
+#         print(board[i][j] + " ", end="")
+#     print()
 
 
-print(k)
+# print(k)
 
