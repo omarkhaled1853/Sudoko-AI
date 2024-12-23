@@ -180,6 +180,7 @@ class SudokuSolver:
 
         if len(self.all_solutions) > 0:
             return self.all_solutions[0]
+        return []
 
     def get_solutions(self):
         return self.all_solutions
