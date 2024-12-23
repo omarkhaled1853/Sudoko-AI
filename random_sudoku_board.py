@@ -1,5 +1,6 @@
 import random
 import math
+from Lib.arc import SudokuSolver
 
 class random_sudoku_board:
     def __init__(self, N, K):
@@ -93,3 +94,68 @@ class random_sudoku_board:
             if self.mat[i][j] != 0:
                 self.mat[i][j] = 0
                 count -= 1
+
+
+    def get_board(self):
+        """ Return the generated Sudoku board. """
+        return self.mat
+
+    def find_conflicting_cells(self, solutions):
+        conflicting_cells = []
+        for i in range(self.N):
+            for j in range(self.N):
+                values = [solution[i][j] for solution in solutions]
+                if len(set(values)) > 1:  # Multiple values in different solutions
+                    conflicting_cells.append((i, j))
+                    return conflicting_cells
+        return conflicting_cells
+
+    def get_board_with_unique_solutino(self):
+        self.fill_diagnoal()
+
+        self.fill_undiagonal(0, self.SRN)
+
+        self.remove_k_digit_random()
+
+        board = [[str(i) for i in row] for row in self.mat]
+
+        sudoku_solver = SudokuSolver(board)
+        sudoku_solver.solve()
+
+        solutions = sudoku_solver.get_solutions()
+
+        while len(solutions) > 1:
+            # Find conflicting positions across all solutions
+            conflicting_cells = self.find_conflicting_cells(solutions)
+
+            if len(conflicting_cells) == 0:
+                break
+
+            # Fill the conflicting cells with any valid value (choose one from the conflicting solutions)
+            for (i, j) in conflicting_cells:
+                possible_values = [solution[i][j] for solution in solutions]
+                chosen_value = random.choice(possible_values)
+                board[i][j] = chosen_value
+
+            # Clear solutions and solve again
+            sudoku_solve = SudokuSolver(board)  # Create a new solver with updated board
+            sudoku_solve.solve()
+            solutions = sudoku_solve.get_solutions()
+
+        return board
+
+
+random_sudoku = random_sudoku_board(9, 30)
+board = random_sudoku.get_board_with_unique_solutino()
+
+k = 0
+for i in range(9):
+    for j in range(9):
+        if board[i][j] == '0':
+            k += 1
+        print(board[i][j] + " ", end="")
+    print()
+
+
+print(k)
+
