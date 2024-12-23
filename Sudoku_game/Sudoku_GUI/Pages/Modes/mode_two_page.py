@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+import time
 from Sudoku_game.Sudoku_GUI.Pages.base_page import BasePage
 from Sudoku_game.Sudoku_GUI.utils import create_styled_label
 from Sudoku_game.Sudoku_GUI.utils import create_styled_button
@@ -240,7 +241,11 @@ class ModeTwoPage(BasePage):
 
     def solve_board(self):
         sudoku_solver = SudokuSolver(self.board)
+        start_time = time.time()
         self.board = sudoku_solver.solve()
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Elapsed time: {elapsed_time} seconds")
         if self.board == []:
             messagebox.showerror("Error", "Not solvable")
         else:

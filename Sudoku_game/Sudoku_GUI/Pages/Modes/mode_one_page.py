@@ -1,4 +1,5 @@
 import tkinter as tk
+import time
 from Sudoku_game.Sudoku_GUI.Pages.base_page import BasePage
 from Sudoku_game.Sudoku_GUI.utils import create_styled_label
 from Sudoku_game.Sudoku_GUI.utils import create_styled_button
@@ -150,5 +151,9 @@ class ModeOnePage(BasePage):
 
     def solve_board(self):
         sudoku_solver = SudokuSolver(self.board)
+        start_time = time.time()
         self.board = sudoku_solver.solve()
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Elapsed time: {elapsed_time} seconds")
         self.update_grid_entries_after_solve()
