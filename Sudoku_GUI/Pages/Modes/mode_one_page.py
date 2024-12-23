@@ -152,4 +152,3 @@ class ModeOnePage(BasePage):
         sudoku_solver = SudokuSolver(self.board)
         self.board = sudoku_solver.solve()
         self.update_grid_entries_after_solve()
-        # print(self.board)

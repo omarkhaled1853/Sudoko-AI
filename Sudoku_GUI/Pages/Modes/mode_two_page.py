@@ -2,6 +2,7 @@ import tkinter as tk
 from Sudoku_GUI.Pages.base_page import BasePage
 from Sudoku_GUI.utils import create_styled_label
 from Sudoku_GUI.utils import create_styled_button
+from Sudoku_logic.sudoku_solver import SudokuSolver
 
 class ModeTwoPage(BasePage):
     def __init__(self, parent, controller):
@@ -32,6 +33,12 @@ class ModeTwoPage(BasePage):
         self.selected_number: tk.StringVar = tk.StringVar(value="")
         # To track the currently selected cell
         self.selected_cell: tuple = None
+        # Initialize board
+        self.board: list[list] = [['0' for _ in range(9)] for _ in range(9)]
+        # Initialize generated cells
+        self.generated_cells = set()
+        # checker
+        self.is_solved = False
 
         # Initialize sudoku grid
         self.create_sudoku_grid()
@@ -75,8 +82,9 @@ class ModeTwoPage(BasePage):
     def select_cell(self, row: int, col: int):
         """Highlights the selected cell and stores its position."""
         # Save the currently selected cell
-        self.selected_cell = (row, col)  
-        self.highlight_related_cells(row, col)
+        self.selected_cell = (row, col)
+        if not self.is_solved:  
+            self.highlight_related_cells(row, col)
 
     def highlight_related_cells(self, row, col):
         """Highlights the selected cell, its row, column, and 3x3 subgrid."""
@@ -145,12 +153,17 @@ class ModeTwoPage(BasePage):
             self.selected_number.set(str(number))
             # Get the selected cell
             row, col = self.selected_cell
+            # Insert the number in generated cells
+            self.generated_cells.add((row, col))
+            # add the number in the board
+            self.board[row][col] = str(number)
             # Temporarily enable editing to update cell
             self.grid_entries[row][col].config(state="normal")
             # Delete the existing value if any
             self.grid_entries[row][col].delete(0, tk.END)
             # Insert the selected number
-            self.grid_entries[row][col].insert(0, str(number))  
+            self.grid_entries[row][col].insert(0, str(number))
+            self.grid_entries[row][col].config(foreground="#344861")
             # Set back to readonly
             self.grid_entries[row][col].config(state="readonly")  
 
@@ -168,24 +181,19 @@ class ModeTwoPage(BasePage):
         new_game_button = create_styled_button(frame, "New Game", self.new_game)
         new_game_button.grid(row=0, column=2, padx=10, pady=5)
 
-        # =============================================================
-        # todo
-        # Create "Generate random board" button
-        check_generated_board_button = create_styled_button(frame, "Check Generated Board", self.check_generated_board)
-        check_generated_board_button.grid(row=0, column=3, padx=10, pady=5)
-
-        # todo
-        # Create "Solve board" button
+        # Create "Solve board" button that check and solve the board
         solve_board_button = create_styled_button(frame, "Solve Board", self.solve_board)
-        solve_board_button.grid(row=0, column=4, padx=10, pady=5)
-        # =============================================================
-
+        solve_board_button.grid(row=0, column=3, padx=10, pady=5)
 
     def erase_cell(self):
         """Erases the content of the focused cell."""
         if self.selected_cell:
             # Get the selected cell
             row, col = self.selected_cell
+            # remove from generated cells
+            self.generated_cells.remove((row, col))
+            # remove from board
+            self.board[row][col] = '0'
             # Temporarily enable editing to update cell
             self.grid_entries[row][col].config(state="normal")
             # Delete the existing value if any
@@ -195,21 +203,41 @@ class ModeTwoPage(BasePage):
 
     def new_game(self):
         """Clears the Sudoku grid for a new game."""
+        self.generated_cells.clear()
+        self.board = [['0' for _ in range(9)] for _ in range(9)]
         for row in self.grid_entries:
             for cell in row:
                 # Temporarily enable editing to update cell
                 cell.config(state="normal")
                 # Delete the existing value if any
                 cell.delete(0, tk.END)
+                cell.config(readonlybackground="#F6F9FC")
+                cell.config(foreground="#344861")
                 # Set back to readonly
                 cell.config(state="readonly")
 
-    # =============================================================
-    # todo
-    def check_generated_board(self):
-        pass
+    def update_grid_entries_after_solve(self):
+        """Update board after solve board"""
+        self.is_solved = True
+        for i in range(9):
+            for j in range(9):
+                # Insert the selected number
+                if (i, j) not in self.generated_cells:
+                    # Temporarily enable editing to update cell
+                    self.grid_entries[i][j].config(state="normal")
+                    # Delete the existing value if any
+                    self.grid_entries[i][j].delete(0, tk.END)
+                    self.grid_entries[i][j].insert(0, str(self.board[i][j]))
+                    self.grid_entries[i][j].config(foreground="#E55C6C")
+                    self.grid_entries[i][j].config(readonlybackground="#F6F9FC")
+                else:
+                    self.grid_entries[i][j].config(readonlybackground="#D3D3D3")
+                    self.grid_entries[i][j].config(foreground="#344861")
+                    
+                # Set back to readonly
+                self.grid_entries[i][j].config(state="readonly")
 
-    # todo
     def solve_board(self):
-        pass
-    # =============================================================
+        sudoku_solver = SudokuSolver(self.board)
+        self.board = sudoku_solver.solve()
+        self.update_grid_entries_after_solve()
