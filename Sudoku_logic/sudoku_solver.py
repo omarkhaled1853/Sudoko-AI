@@ -11,7 +11,11 @@ class SudokuSolver:
 
         self.all_solutions = []
         self.res = 0
+        self.clear_file("arc_violation.txt")
 
+    def clear_file(self, file_name):
+        with open(file_name, 'w') as file:
+            pass
 
     def _create_variables(self):
         variables = []
@@ -149,8 +153,19 @@ class SudokuSolver:
         values_to_remove = []
         for val in self.domain[xi]:
             if not self._consistent(val, xj):
+                with open('arc_violation.txt', 'a') as file:
+                    file.write(f"Inconsistent arc between {xi} and {xj} at value: {val}\n")
+                    filter_l = [x for x in self.domain[xi] if x not in values_to_remove]
+                    file.write(f"Domain of {xi} before remove {filter_l}\n")
+
                 values_to_remove.append(val)
+
+                with open('arc_violation.txt', 'a') as file:
+                    filter_l = [x for x in self.domain[xi] if x not in values_to_remove]
+                    file.write(f"Domain of {xi} after remove {filter_l}\n")
+
                 revised = True
+
         for val in values_to_remove:
             self.domain[xi].remove(val)
         return revised
