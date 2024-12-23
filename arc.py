@@ -1,310 +1,194 @@
-from Lib.random_sudoku_board import random_sudoku_board
 from collections import deque
 
-def create_variables():
-    variables = []
-    for i in range(9):
-        for j in range(9):
-            variables.append((i, j))
+class SudokuSolver:
+    def __init__(self, board):
+        self.board = board
+        self.variables = self._create_variables()
+        self.neighbors = self._create_neighbors(self.variables)
+        self.domain = self._create_domain(self.board)
 
-    return variables
+    def _create_variables(self):
+        variables = []
+        for i in range(9):
+            for j in range(9):
+                variables.append((i, j))
+        return variables
 
-def get_row_neighbors(var):
-    neighbors = []
-    for i in range(9):
-        if i != var[1]:
-            neighbors.append((var[0], i))
+    def _get_row_neighbors(self, var):
+        neighbors = []
+        for i in range(9):
+            if i != var[1]:
+                neighbors.append((var[0], i))
+        return neighbors
 
-    return neighbors
+    def _get_col_neighbors(self, var):
+        neighbors = []
+        for i in range(9):
+            if i != var[0]:
+                neighbors.append((i, var[1]))
+        return neighbors
 
+    def _get_box_neighbors(self, var):
+        row = var[0] // 3 * 3
+        col = var[1] // 3 * 3
+        neighbors = []
+        for i in range(row, row + 3):
+            for j in range(col, col + 3):
+                if (i, j) != var:
+                    neighbors.append((i, j))
+        return neighbors
 
-def get_col_neighbors(var):
-    neighbors = []
-    for i in range(9):
-        if i != var[0]:
-            neighbors.append((i, var[1]))
+    def _get_all_neighbors(self, x):
+        row_neighbors = self._get_row_neighbors(x)
+        col_neighbors = self._get_col_neighbors(x)
+        box_neighbors = self._get_box_neighbors(x)
+        return row_neighbors + col_neighbors + box_neighbors
 
-    return neighbors
+    def _create_neighbors(self, variables):
+        neighbors = {}
+        for variable in variables:
+            neighbors[variable] = self._get_all_neighbors(variable)
+        return neighbors
 
+    def _delete_constraint_values(self, values: [], neighbors: []):
+        for neighbor in neighbors:
+            if self.board[neighbor[0]][neighbor[1]] != '0':
+                if self.board[neighbor[0]][neighbor[1]] in values:
+                    values.remove(self.board[neighbor[0]][neighbor[1]])
 
-def get_box_neighbors(var):
-    row = var[0] // 3 * 3
-    col = var[1] // 3 * 3
+    def _get_valid_values(self, variable):
+        values = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+        row_neighbors = self._get_row_neighbors(variable)
+        self._delete_constraint_values(values, row_neighbors)
 
-    neighbors = []
-    for i in range(row, row + 3):
-        for j in range(col, col + 3):
-            if (i, j) != var:
-                neighbors.append((i, j))
+        col_neighbors = self._get_col_neighbors(variable)
+        self._delete_constraint_values(values, col_neighbors)
 
-    return  neighbors
+        box_neighbors = self._get_box_neighbors(variable)
+        self._delete_constraint_values(values, box_neighbors)
 
-def get_all_neighbors(x):
-    row_neighbors = get_row_neighbors(x)
-    col_neighbors = get_col_neighbors(x)
-    box_neighbors = get_box_neighbors(x)
+        return values
 
-    return row_neighbors + col_neighbors + box_neighbors
+    def _create_domain(self, board):
+        domain = {}
+        for i in range(9):
+            for j in range(9):
+                if board[i][j] == '0':
+                    domain[(i, j)] = self._get_valid_values((i, j))
+                else:
+                    domain[(i, j)] = [board[i][j]]
+        return domain
 
-def create_neighbors(variables):
-    neighbors = {}
-    for variable in variables:
-        neighbors[variable] = get_all_neighbors(variable)
+    def _consistent(self, val, xj):
+        for jVal in self.domain[xj]:
+            if jVal != val:
+                return True
+        return False
 
-    return neighbors
+    def _select_unassigned_variable(self):
+        variable = None
+        for var in self.variables:
+            if self.board[var[0]][var[1]] == '0':
+                if variable is None or len(self.domain[var]) < len(self.domain[variable]):
+                    variable = var
+        return variable
 
+    def _number_of_role_out(self, variable, value):
+        var_neighbors = self._get_all_neighbors(variable)
+        role_out = 0
+        for neighbor in var_neighbors:
+            if value in self.domain[neighbor]:
+                role_out += 1
+        return role_out
 
-def delete_constraint_values(values: [], neighbors:[]):
-    for neighbor in neighbors:
-        if board[neighbor[0]][neighbor[1]] != '0':
-            if board[neighbor[0]][neighbor[1]] in values:
-                values.remove(board[neighbor[0]][neighbor[1]])
+    def _order_domain_values(self, variable):
+        valid_values = self._get_valid_values(variable)
+        order_domain = sorted(valid_values, key=lambda value: self._number_of_role_out(variable, value))
+        return order_domain
 
-
-def get_valid_values(variable):
-    values = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-
-    row_neighbors = get_row_neighbors(variable)
-    delete_constraint_values(values, row_neighbors)
-
-    col_neighbors = get_col_neighbors(variable)
-    delete_constraint_values(values, col_neighbors)
-
-    box_neighbors = get_box_neighbors(variable)
-    delete_constraint_values(values, box_neighbors)
-
-    return values
-
-def create_domain(board:[[]]):
-    domain = {}
-
-    for i in range(9):
-        for j in range(9):
-            if board[i][j] == '0':
-                domain[(i,j)] = get_valid_values((i, j))
-            else:
-                domain[(i, j)] = board[i][j]
-
-    return domain
-
-def consistent(val, xj):
-    for jVal in domain[xj]:
-        if jVal != val:
-            return True
-
-    return False
-
-# There is always unselected variable when we call this method
-def select_unassigned_variable(variables):
-    variable = None
-
-    for var in variables:
-        if board[var[0]][var[1]] == '0':
-            if variable is None or len(domain[var]) < len(domain[variable]):
-                variable = var
-
-    return variable
-
-
-
-def number_of_role_out(variable, value):
-    var_neighbors = get_all_neighbors(variable)
-
-    role_out = 0
-    for neighbor in var_neighbors:
-        if value in domain[neighbor]:
-            role_out += 1
-
-    return role_out
-
-
-def order_domain_values(variable):
-    valid_values = get_valid_values(variable)
-
-    order_domain = sorted(valid_values, key=lambda  value: number_of_role_out(variable, value))
-
-    return order_domain
-
-def valid_move(var, value):
-    variable_neighbors = get_all_neighbors(var)
-
-    for neighbor in variable_neighbors:
-        if board[neighbor[0]][neighbor[1]] == value:
-            return False
-
-    return True
-
-def game_solved():
-    for i in range(9):
-        for j in range(9):
-            if board[i][j] == '0':
+    def _valid_move(self, var, value):
+        variable_neighbors = self._get_all_neighbors(var)
+        for neighbor in variable_neighbors:
+            if self.board[neighbor[0]][neighbor[1]] == value:
                 return False
-
-    return  True
-
-def ac_3():
-    queue = deque()
-
-    for var, neighbors_list in neighbors.items():
-        for neighbor in neighbors_list:
-            queue.append((var, neighbor))
-
-
-
-    while queue:
-        top = queue.popleft()
-
-        if revise(top[0], top[1]):
-            if len(domain[top[0]]) == 0:
-                return False
-
-            all_neighbors = get_all_neighbors(top[0])
-            for neighbor in all_neighbors:
-                if neighbor == top[1]:
-                    continue
-                queue.append((neighbor, top[0]))
-
-    return True
-
-
-
-def revise(xi, xj):
-    revised = False
-    values_to_remove = []
-
-    for val in domain[xi]:
-        if not consistent(val, xj):
-            values_to_remove.append(val)
-            revised = True
-
-    for val in values_to_remove:
-        domain[xi].remove(val)
-
-    return revised
-
-def bakctrack():
-    if game_solved():
         return True
 
-    var = select_unassigned_variable(variables)
-    order_values = order_domain_values(var)
+    def _game_solved(self):
+        for i in range(9):
+            for j in range(9):
+                if self.board[i][j] == '0':
+                    return False
+        return True
 
-    for value in order_values:
-        board[var[0]][var[1]] = value
+    def _ac_3(self):
+        queue = deque()
+        for var, neighbors_list in self.neighbors.items():
+            for neighbor in neighbors_list:
+                queue.append((var, neighbor))
 
-        if ac_3():
-            result = bakctrack()
-            if result:
-                return True
+        while queue:
+            top = queue.popleft()
+            if self._revise(top[0], top[1]):
+                if len(self.domain[top[0]]) == 0:
+                    return False
+                all_neighbors = self._get_all_neighbors(top[0])
+                for neighbor in all_neighbors:
+                    if neighbor == top[1]:
+                        continue
+                    queue.append((neighbor, top[0]))
+        return True
 
-        board[var[0]][var[1]] = '0'
+    def _revise(self, xi, xj):
+        revised = False
+        values_to_remove = []
+        for val in self.domain[xi]:
+            if not self._consistent(val, xj):
+                values_to_remove.append(val)
+                revised = True
+        for val in values_to_remove:
+            self.domain[xi].remove(val)
+        return revised
 
-    return False
+    def _backtrack(self):
+        if self._game_solved():
+            return True
 
-def print_board():
-    for i in range(9):
-        for j in range(9):
-            print(board[i][j] + " ", end="")
-        print()
+        var = self._select_unassigned_variable()
+        order_values = self._order_domain_values(var)
 
+        for value in order_values:
+            self.board[var[0]][var[1]] = value
+            if self._ac_3():
+                result = self._backtrack()
+                if result:
+                    return True
+            self.board[var[0]][var[1]] = '0'
 
+        return False
 
-
+    def solve(self):
+        print(self._backtrack())
+        return self.board
 
 
 
 board = [
-    ['0','0','8','0','4','0','0','0','0'],
-    ['9','0','3','0','0','1','2','0','0'],
-    ['0','0','0','5','0','0','0','1','0'],
-    ['0','8','0','0','0','9','0','0','0'],
-    ['4','0','9','7','0','0','0','0','3'],
-    ['0','5','0','0','0','0','4','0','0'],
-    ['2','0','1','0','0','5','3','0','0'],
-    ['0','0','0','0','6','0','0','0','7'],
-    ['0','4','0','0','0','0','0','0','0']
+    ['6','0','0','0','0','0','8','0','0'],
+    ['0','0','2','0','9','0','0','4','0'],
+    ['0','0','7','0','8','4','1','0','0'],
+    ['0','0','0','9','0','0','0','6','0'],
+    ['5','8','0','7','6','3','0','2','9'],
+    ['0','0','9','4','0','0','0','0','0'],
+    ['9','4','0','0','0','0','0','0','7'],
+    ['0','0','0','6','0','2','0','8','0'],
+    ['0','0','0','5','4','0','6','0','3']
 ]
 
-sudoku = random_sudoku_board(9, 40)
-sudoku.fill_board()
-board = [[str(i) for i in row] for row in sudoku.mat]
 
-variables = create_variables()
-neighbors = create_neighbors(variables)
-domain = create_domain(board)
+sod_solver = SudokuSolver(board)
+result = sod_solver.solve()
 
-ac_3()
-print(bakctrack())
-print_board()
-
-
-
-
-
-
-#
-# ac_3()
-#
-# for t in domain.items():
-#     print(t)
-
-# print(number_of_role_out((1,1), '4'))
-# print(number_of_role_out((1,1), '5'))
-# print(order_domain_values((1,1)))
-#
-
-# for i in range(9):
-#     for j in range(9):
-#         print(board[i][j] + " ", end="")
-#     print()
-
-# for neighbor in neighbors[0,1]:
-#     revise((0,1),neighbor)
-#
-#
-# domain[(0,1)].remove('3')
-# print(domain[(8,7)])
-#
-# for neighbor in neighbors[(0,1)]:
-#     print(revise((0,1), neighbor))
-#     print("nn ", neighbor)
-#     for value in domain[(0, 1)]:
-#         print(value)
-
-# domain[(0,1)] = '4'
-#
-# print(revise((0,1), (1,1)))
-
-# for value in domain.values():
-#     print(value)
-# # print(domain)
-# ac_3()
-#
-# print()
-# for value in domain.values():
-#     print(value)
-
-# domain[0,1].remove('3')
-# for val in domain[0,1]:
-#     print(val)
-
-
-# print(len(neighbors[(0,0)]))
-
-# r_n = row_neighbors((0,0))
-# c_n = col_neighbors((0,0))
-#
-# x = r_n + c_n
-# print(x)
-# print(box_neigbors((0,4)))
-
-# def create_neighbors(variables):
-#     neighbors = {}
-#
-#     for var in variables:
-
-
-
-
-
-
+for i in range(9):
+    for j in range(9):
+        print(result[i][j] + " ", end="")
+    print()
