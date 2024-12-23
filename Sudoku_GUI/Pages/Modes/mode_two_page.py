@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 from Sudoku_GUI.Pages.base_page import BasePage
 from Sudoku_GUI.utils import create_styled_label
 from Sudoku_GUI.utils import create_styled_button
@@ -240,4 +241,7 @@ class ModeTwoPage(BasePage):
     def solve_board(self):
         sudoku_solver = SudokuSolver(self.board)
         self.board = sudoku_solver.solve()
-        self.update_grid_entries_after_solve()
+        if self.board == []:
+            messagebox.showerror("Error", "Not solvable")
+        else:
+            self.update_grid_entries_after_solve()
