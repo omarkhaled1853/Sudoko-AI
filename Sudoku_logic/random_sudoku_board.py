@@ -1,8 +1,8 @@
 import random
 import math
-from Sudoku_logic.arc import SudokuSolver
+from Sudoku_logic.sudoku_solver import SudokuSolver
 
-class random_sudoku_board:
+class RandomSudokuBoard:
     def __init__(self, N, K):
         self.N = N
         self.K = K

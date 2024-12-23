@@ -1,6 +1,5 @@
 import copy
 from collections import deque
-import random
 
 class SudokuSolver:
     def __init__(self, board):
@@ -184,78 +183,3 @@ class SudokuSolver:
 
     def get_solutions(self):
         return self.all_solutions
-
-
-
-
-#
-# int_board = random_sudoku.get_board()
-# board = [[str(i) for i in row] for row in int_board]
-#
-# sudoku_solver = SudokuSolver()
-# sudoku_solver.solve(board)
-#
-# solutions = sudoku_solver.get_solutions()
-# print(len(solutions))
-#
-# while len(solutions) > 1:
-#     # Find conflicting positions across all solutions
-#     conflicting_cells = find_conflicting_cells(solutions)
-#
-#     # Fill the conflicting cells with any valid value (choose one from the conflicting solutions)
-#     for (i, j) in conflicting_cells:
-#         possible_values = [solution[i][j] for solution in solutions]
-#         chosen_value = random.choice(possible_values)
-#         board[i][j] = chosen_value
-#
-#     # Clear solutions and solve again
-#     sudoku_solve = SudokuSolver()  # Create a new solver with updated board
-#     sudoku_solve.solve(board)
-#     solutions = sudoku_solve.get_solutions()
-#
-
-
-
-
-# random_sudoku.ensure_unique_solution(sudoku_solver)
-#
-# int_board = random_sudoku.get_board()
-# board = [[str(i) for i in row] for row in int_board]
-#
-# for i in range(9):
-#     for j in range(9):
-#         print(board[i][j] + " ", end="")
-#     print()
-#
-
-
-# board = [
-#     ['6','0','0','0','0','0','8','0','0'],
-#     ['0','0','2','0','9','0','0','4','0'],
-#     ['0','0','7','0','8','4','1','0','0'],
-#     ['0','0','0','9','0','0','0','6','0'],
-#     ['5','8','0','0','0','3','0','2','9'],
-#     ['0','0','9','4','0','0','0','0','0'],
-#     ['9','4','0','0','0','0','0','0','7'],
-#     ['0','0','0','6','0','2','0','8','0'],
-#     ['0','0','0','0','4','0','6','0','3']
-# ]
-#
-#
-# sod_solver = SudokuSolver(board)
-# result = sod_solver.solve()
-# print(sod_solver.res)
-# for solution in sod_solver.all_solutions:
-#     for i in range(9):
-#         for j in range(9):
-#             print(solution[i][j] + " ", end="")
-#         print()
-#
-#     print()
-#
-#
-# print(len(sod_solver.all_solutions))
-# for i in range(9):
-#     for j in range(9):
-#         print(result[i][j] + " ", end="")
-#     print()
