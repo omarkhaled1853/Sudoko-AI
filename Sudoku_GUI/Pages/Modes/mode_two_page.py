@@ -1,12 +1,22 @@
 import tkinter as tk
 from Sudoku_GUI.Pages.base_page import BasePage
+from Sudoku_GUI.utils import create_styled_label
+from Sudoku_GUI.utils import create_styled_button
 
 class ModeTwoPage(BasePage):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
 
-        mode1_label = tk.Label(self.frame, text="Mode 2: Basic Game", font=("Arial", 16))
-        mode1_label.pack(pady=20)
+        mode_one_label = create_styled_label(
+            self.base_page_frame,
+            "Challenge Agent Mode",
+            16
+        )
+        mode_one_label.pack(pady=20)
 
-        back_button = tk.Button(self.frame, text="Back to Menu", font=("Arial", 14), command=controller.show_menu)
+        back_button = create_styled_button(
+            self.base_page_frame,
+            "<- Back to Menu",
+            controller.show_menu
+        )
         back_button.pack(pady=10)

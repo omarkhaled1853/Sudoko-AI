@@ -20,3 +20,17 @@ def create_styled_button(frame: tk.Frame, text: str, command) -> tk.Button:
     button.bind("<Leave>", button.config(background="#5A7BC0", foreground="#FFFFFF"))
 
     return button
+
+def create_styled_label(frame: tk.Frame, text: str, font_size: float):
+    label = tk.Label(
+            frame, 
+            text=text, 
+            font=("Arial", font_size, "bold"), 
+            bg="#F6F9FC", 
+            fg="#4A90E2", 
+            padx=20, 
+            pady=10, 
+            relief="raised", 
+            borderwidth=2
+        )
+    return label
