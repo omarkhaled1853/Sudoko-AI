@@ -164,9 +164,22 @@ class ModeOnePage(BasePage):
         erase_button = create_styled_button(frame, "Erase", self.erase_cell)
         erase_button.grid(row=0, column=1, padx=10, pady=5)
 
-        # Create "New Game" button
-        new_game_button = create_styled_button(frame, "New Game", self.new_game)
-        new_game_button.grid(row=0, column=2, padx=10, pady=5)
+        # # Create "New Game" button
+        # new_game_button = create_styled_button(frame, "New Game", self.new_game)
+        # new_game_button.grid(row=0, column=2, padx=10, pady=5)
+
+        # =============================================================
+        # todo
+        # Create "Generate random board" button
+        new_game_button = create_styled_button(frame, "Generate Random Board", self.generate_randome_board)
+        new_game_button.grid(row=0, column=3, padx=10, pady=5)
+
+        # todo
+        # Create "Solve board" button
+        new_game_button = create_styled_button(frame, "Solve Board", self.solve_board)
+        new_game_button.grid(row=0, column=4, padx=10, pady=5)
+        # =============================================================
+
 
     def erase_cell(self):
         """Erases the content of the focused cell."""
@@ -180,13 +193,23 @@ class ModeOnePage(BasePage):
             # Set back to readonly
             self.grid_entries[row][col].config(state="readonly") 
 
-    def new_game(self):
-        """Clears the Sudoku grid for a new game."""
-        for row in self.grid_entries:
-            for cell in row:
-                # Temporarily enable editing to update cell
-                cell.config(state="normal")
-                # Delete the existing value if any
-                cell.delete(0, tk.END)
-                # Set back to readonly
-                cell.config(state="readonly")
+    # def new_game(self):
+    #     """Clears the Sudoku grid for a new game."""
+    #     for row in self.grid_entries:
+    #         for cell in row:
+    #             # Temporarily enable editing to update cell
+    #             cell.config(state="normal")
+    #             # Delete the existing value if any
+    #             cell.delete(0, tk.END)
+    #             # Set back to readonly
+    #             cell.config(state="readonly")
+
+    # =============================================================
+    # todo
+    def generate_randome_board(self):
+        pass
+
+    # todo
+    def solve_board(self):
+        pass
+    # =============================================================
