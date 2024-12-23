@@ -1,4 +1,5 @@
-from Sudoku_GUI.sudoku_app import App;
+from Sudoku_GUI.app import App;
+
 if __name__ == "__main__":
     app = App()
     app.mainloop()
