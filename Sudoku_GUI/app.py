@@ -14,37 +14,42 @@ class App(tk.Tk):
         self.resizable(True, True)
 
         # Create a container frame for all pages
-        container = tk.Frame(self)
-        container.pack(fill="both", expand=True)
+        self.container = tk.Frame(self)
+        self.container.pack(fill="both", expand=True)
 
-        # Initialize pages and pass the container frame as a parent 
-        # and App instance as a controller for that pages  
-        self.menu_page = MenuPage(container, self)
-        self.mode_one_page = ModeOnePage(container, self)
-        self.mode_two_page = ModeTwoPage(container, self)
-        self.mode_three_page = ModeThreePage(container, self)
+        # Initialize menu page 
+        self.menu_page = MenuPage(self.container, self)
 
         # Show the menu page initially
         self.menu_page.show()
     
+    def reinitialize_mode_page(self, mode_class):
+        """Reinitialize the mode page."""
+        # Destroy the existing mode page if it exists
+        for widget in self.container.winfo_children():
+            widget.destroy()
+
+        # Create a new instance of the mode page
+        mode_page = mode_class(self.container, self)
+        mode_page.show()
+        return mode_page
+
     def show_menu(self):
         """Show menu page and hide all other pages"""
-        self.mode_one_page.hide()
-        self.mode_two_page.hide()
-        self.mode_three_page.hide()
+        for widget in self.container.winfo_children():
+            widget.destroy()
+
+        self.menu_page = MenuPage(self.container, self)
         self.menu_page.show()
-    
+
     def show_mode_one(self):
         """Show mode one page and hide menu page"""
-        self.menu_page.hide()
-        self.mode_one_page.show()
+        self.mode_one_page = self.reinitialize_mode_page(ModeOnePage)
 
     def show_mode_two(self):
         """Show mode two page and hide menu page"""
-        self.menu_page.hide()
-        self.mode_two_page.show()
+        self.mode_two_page = self.reinitialize_mode_page(ModeTwoPage)
 
     def show_mode_three(self):
         """Show mode three page and hide menu page"""
-        self.menu_page.hide()
-        self.mode_three_page.show()
+        self.mode_three_page = self.reinitialize_mode_page(ModeThreePage)
