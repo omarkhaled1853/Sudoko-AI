@@ -221,9 +221,8 @@ class ModeOnePage(BasePage):
         """Generate randome board"""
         # Initialize randome board generator class
         random_sudoku = random_sudoku_board(9, 30)
-        self.board = random_sudoku.get_board_with_unique_solutino()
+        self.board = random_sudoku.get_board_with_unique_solution()
         self.update_grid_entries()
 
-    # todo
     def solve_board(self):
         pass

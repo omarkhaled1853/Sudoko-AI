@@ -110,7 +110,7 @@ class random_sudoku_board:
                     return conflicting_cells
         return conflicting_cells
 
-    def get_board_with_unique_solutino(self):
+    def get_board_with_unique_solution(self):
         self.fill_diagnoal()
 
         self.fill_undiagonal(0, self.SRN)
@@ -143,19 +143,4 @@ class random_sudoku_board:
             solutions = sudoku_solve.get_solutions()
 
         return board
-
-
-# random_sudoku = random_sudoku_board(9, 30)
-# board = random_sudoku.get_board_with_unique_solutino()
-
-# k = 0
-# for i in range(9):
-#     for j in range(9):
-#         if board[i][j] == '0':
-#             k += 1
-#         print(board[i][j] + " ", end="")
-#     print()
-
-
-# print(k)
 
