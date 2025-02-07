@@ -57,5 +57,8 @@ This Sudoku game offers three different modes, incorporating AI-powered solving 
 
 - **Arc Consistency (AC-3 Algorithm)** for constraint satisfaction and random board generation.
 
-Enjoy solving Sudoku with AI assistance!
+## License
 
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details
+
+Enjoy solving Sudoku with AI assistance!
